@@ -95,7 +95,8 @@ function computerMovement() {
 
 function moveEverything() {
 	if (showWinScreen) {
-		drawWinScreen();
+		canvasContext.fillStyle = 'white';
+		canvasContext.fillText("Click to Continue", canvas.width/2, canvas.height/2);
 		return;
 	}
 	computerMovement();
@@ -132,7 +133,6 @@ function moveEverything() {
 }
 
 function displayScore() {
-	canvasContext.fillStyle = 'white';
 	canvasContext.fillText('Player 1 Score', canvas.width/4, 100);
 	canvasContext.fillText(player1Score, canvas.width/4, 120);
 	canvasContext.fillText('Player 2 Score', canvas.width/2 + 100, 100);
@@ -144,10 +144,10 @@ function drawNet() {
 		colorRect(canvas.width/2 - 1, i, 2, 20, 'white');
 	}
 }
-function drawWinScreen() {
-	drawBoard();
-	displayScore();
-	canvasContext.fillStyle = 'white';
+
+function drawEverything() {
+	if (showWinScreen) {
+		canvasContext.fillStyle = 'white';
 		if (player1Score >= WINNING_SCORE) {
 			canvasContext.fillText("Player 1 Wins!", canvas.width/2, canvas.height/2 - 100);
 		}
@@ -155,11 +155,6 @@ function drawWinScreen() {
 			canvasContext.fillText("Player 2 Wins!", canvas.width/2, canvas.height/2 - 100);
 		}
 		canvasContext.fillText("Click to Continue", canvas.width/2, canvas.height/2);
-}
-
-function drawEverything() {
-	if (showWinScreen) {
-		drawWinScreen();
 		return;
 	}
 	drawBoard();

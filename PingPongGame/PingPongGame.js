@@ -1,5 +1,5 @@
 var canvas;
-var canvasContext;
+var ctx;
 
 var ballX = 50;
 var ballSpeedX = 1;
@@ -35,13 +35,9 @@ function handleMouseClick(evt) {
 
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
-	canvasContext = canvas.getContext('2d');
+	ctx = canvas.getContext('2d');
 
-	var framesPerSecond = 1000;
-	setInterval(function() {
-		drawEverything();
-		moveEverything();
-	}, 1000/framesPerSecond);
+	loadMainMenu();
 
 	canvas.addEventListener('mousedown', handleMouseClick);
 	canvas.addEventListener('mousemove',
@@ -49,6 +45,46 @@ window.onload = function() {
 			var mousePos = calculateMousePos(evt);
 			paddle1Y = mousePos.y - (PADDLE_HEIGHT/2);
 		});
+}
+
+function loadMainMenu() {
+	const onePX = canvas.width/4;
+	const onePY = canvas.height/2 + 100;
+
+	drawBackground();
+
+	// Test box
+	// colorRect(onePX, onePY, 100, 20, 'red');
+	
+	ctx.fillStyle = 'white';
+	ctx.font = "30px Arial";
+	ctx.fillText("Ping Pong Game",canvas.width/2 - 130,canvas.height/2);
+
+	ctx.font = "20px Arial";
+	ctx.fillText("One-Player",onePX, onePY);
+	canvas.addEventListener('click', 
+		function(evt) {
+			var mousePos = calculateMousePos(evt);
+			if (mousePos.x > onePX && 
+				mousePos.x < onePX + 100 &&
+				mousePos.y < onePY &&
+				mousePos.y > onePY - 20) {
+				startGame();
+			} 
+		});
+
+
+	ctx.font = "20px Arial";
+	ctx.fillText("Two-Player",canvas.width/2 + 100,canvas.height/2 + 100);
+}
+
+function startGame() {
+	var framesPerSecond = 1000;
+
+	setInterval(function() {
+		drawEverything();
+		moveEverything();
+	}, 1000/framesPerSecond);
 }
 
 function ballReset() {
@@ -62,15 +98,15 @@ function ballReset() {
 	}
 }
 
-function drawBoard() {
+function drawBackground() {
 	colorRect(0,0,canvas.width,canvas.height, 'black');
 }
 
 function colorBall(centerX, centerY, radius, drawColor) {
-	canvasContext.fillStyle = drawColor;
-	canvasContext.beginPath();
-	canvasContext.arc(centerX, centerY, radius, 0,Math.PI*2, true);
-	canvasContext.fill();
+	ctx.fillStyle = drawColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0,Math.PI*2, true);
+	ctx.fill();
 }
 
 function drawPaddles() {
@@ -79,8 +115,8 @@ function drawPaddles() {
 }
 
 function colorRect(leftX, topY, width, height, drawColor) {
-	canvasContext.fillStyle = drawColor;
-	canvasContext.fillRect(leftX,topY,width,height);
+	ctx.fillStyle = drawColor;
+	ctx.fillRect(leftX,topY,width,height);
 }
 
 function computerMovement() {
@@ -132,11 +168,11 @@ function moveEverything() {
 }
 
 function displayScore() {
-	canvasContext.fillStyle = 'white';
-	canvasContext.fillText('Player 1 Score', canvas.width/4, 100);
-	canvasContext.fillText(player1Score, canvas.width/4, 120);
-	canvasContext.fillText('Player 2 Score', canvas.width/2 + 100, 100);
-	canvasContext.fillText(player2Score, canvas.width/2 + 100, 120);
+	ctx.fillStyle = 'white';
+	ctx.fillText('Player 1 Score', canvas.width/4, 100);
+	ctx.fillText(player1Score, canvas.width/4, 120);
+	ctx.fillText('Player 2 Score', canvas.width/2 + 100, 100);
+	ctx.fillText(player2Score, canvas.width/2 + 100, 120);
 }
 
 function drawNet() {
@@ -145,16 +181,16 @@ function drawNet() {
 	}
 }
 function drawWinScreen() {
-	drawBoard();
+	drawBackground();
 	displayScore();
-	canvasContext.fillStyle = 'white';
-		if (player1Score >= WINNING_SCORE) {
-			canvasContext.fillText("Player 1 Wins!", canvas.width/2, canvas.height/2 - 100);
-		}
-		else if (player2Score >= WINNING_SCORE) {
-			canvasContext.fillText("Player 2 Wins!", canvas.width/2, canvas.height/2 - 100);
-		}
-		canvasContext.fillText("Click to Continue", canvas.width/2, canvas.height/2);
+	ctx.fillStyle = 'white';
+	if (player1Score >= WINNING_SCORE) {
+		ctx.fillText("Player 1 Wins!", canvas.width/2, canvas.height/2 - 100);
+	}
+	else if (player2Score >= WINNING_SCORE) {
+		ctx.fillText("Player 2 Wins!", canvas.width/2, canvas.height/2 - 100);
+	}
+	ctx.fillText("Click to Continue", canvas.width/2, canvas.height/2);
 }
 
 function drawEverything() {
@@ -162,7 +198,7 @@ function drawEverything() {
 		drawWinScreen();
 		return;
 	}
-	drawBoard();
+	drawBackground();
 	colorBall(ballX, ballY, 10, 'white');
 	drawPaddles();
 	drawNet();

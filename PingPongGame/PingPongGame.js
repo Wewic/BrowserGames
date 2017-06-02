@@ -17,6 +17,8 @@ var paddle2Y = 100;
 const PADDLE_HEIGHT = 100;
 const PADDLE_WIDTH = 10;
 
+const framesPerSecond = 1000;
+
 function calculateMousePos(evt) {
 	var rect = canvas.getBoundingClientRect();
 	var root = document.documentElement;
@@ -50,11 +52,13 @@ window.onload = function() {
 function loadMainMenu() {
 	const onePX = canvas.width/4;
 	const onePY = canvas.height/2 + 100;
+	const twoPX = canvas.width/2 + 100;
+	const twoPY = canvas.height/2 + 100;
 
 	drawBackground();
 
 	// Test box
-	// colorRect(onePX, onePY, 100, 20, 'red');
+	// colorRect(twoPX, twoPY, 100, 20, 'red');
 	
 	ctx.fillStyle = 'white';
 	ctx.font = "30px Arial";
@@ -69,21 +73,34 @@ function loadMainMenu() {
 				mousePos.x < onePX + 100 &&
 				mousePos.y < onePY &&
 				mousePos.y > onePY - 20) {
-				startGame();
+				start1PGame();
 			} 
 		});
 
-
 	ctx.font = "20px Arial";
-	ctx.fillText("Two-Player",canvas.width/2 + 100,canvas.height/2 + 100);
+	ctx.fillText("Two-Player", twoPX, twoPY);
+	canvas.addEventListener('click', 
+		function(evt) {
+			var mousePos = calculateMousePos(evt);
+			if (mousePos.x > twoPX && 
+				mousePos.x < twoPX + 100 &&
+				mousePos.y < twoPY &&
+				mousePos.y > twoPY - 20) {
+				start2PGame();
+			} 
+		});
 }
 
-function startGame() {
-	var framesPerSecond = 1000;
-
+function start1PGame() {
 	setInterval(function() {
 		drawEverything();
 		moveEverything();
+	}, 1000/framesPerSecond);
+}
+
+function start2PGame() {
+	setInterval(function() {
+		drawEverything();
 	}, 1000/framesPerSecond);
 }
 
@@ -185,12 +202,12 @@ function drawWinScreen() {
 	displayScore();
 	ctx.fillStyle = 'white';
 	if (player1Score >= WINNING_SCORE) {
-		ctx.fillText("Player 1 Wins!", canvas.width/2, canvas.height/2 - 100);
+		ctx.fillText("Player 1 Wins!", canvas.width/2 - 70, canvas.height/2 - 100);
 	}
 	else if (player2Score >= WINNING_SCORE) {
-		ctx.fillText("Player 2 Wins!", canvas.width/2, canvas.height/2 - 100);
+		ctx.fillText("Player 2 Wins!", canvas.width/2 - 70, canvas.height/2 - 100);
 	}
-	ctx.fillText("Click to Continue", canvas.width/2, canvas.height/2);
+	ctx.fillText("Click to Continue", canvas.width/2 - 70, canvas.height/2);
 }
 
 function drawEverything() {

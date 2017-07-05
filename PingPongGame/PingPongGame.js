@@ -17,6 +17,8 @@ var paddle2Y = 100;
 const PADDLE_HEIGHT = 100;
 const PADDLE_WIDTH = 10;
 
+var numPlayers = 1;
+
 const framesPerSecond = 1000;
 
 function calculateMousePos(evt) {
@@ -41,7 +43,6 @@ window.onload = function() {
 
 	loadMainMenu();
 
-	canvas.addEventListener('mousedown', handleMouseClick);
 	canvas.addEventListener('mousemove',
 		function(evt) {
 			var mousePos = calculateMousePos(evt);
@@ -73,7 +74,8 @@ function loadMainMenu() {
 				mousePos.x < onePX + 100 &&
 				mousePos.y < onePY &&
 				mousePos.y > onePY - 20) {
-				start1PGame();
+				numPlayers = 1;
+				startGame();
 			} 
 		});
 
@@ -81,32 +83,30 @@ function loadMainMenu() {
 	ctx.fillText("Two-Player", twoPX, twoPY);
 	canvas.addEventListener('click', 
 		function(evt) {
+			console.log("Two Player");
 			var mousePos = calculateMousePos(evt);
 			if (mousePos.x > twoPX && 
 				mousePos.x < twoPX + 100 &&
 				mousePos.y < twoPY &&
 				mousePos.y > twoPY - 20) {
-				start2PGame();
+				numPlayers = 2;
+				player2Movement();
+				startGame();
 			} 
 		});
 }
 
-function start1PGame() {
+function startGame() {
+	console.log("Game Start");
 	setInterval(function() {
 		drawEverything();
 		moveEverything();
 	}, 1000/framesPerSecond);
 }
 
-function start2PGame() {
-	setInterval(function() {
-		drawEverything();
-	}, 1000/framesPerSecond);
-}
-
 function ballReset() {
-	ballSpeedX = -ballSpeedX;
-	ballSpeedY = -ballSpeedY;
+	ballSpeedX = -ballSpeedX/3;
+	ballSpeedY = -ballSpeedY/3;
 	ballX = canvas.width/2;
 	ballY = canvas.height/2;
 	if (player1Score >= WINNING_SCORE || 
@@ -139,11 +139,24 @@ function colorRect(leftX, topY, width, height, drawColor) {
 function computerMovement() {
 	var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
 	if (paddle2Y < ballY-35) {
-		paddle2Y += 1;
+		paddle2Y++;
 	}
 	else if (paddle2YCenter > ballY+35) {
-		paddle2Y -= 1;
+		paddle2Y--;
 	}
+}
+
+function player2Movement() {
+	document.addEventListener("keydown", function(evt){
+		if (evt.keyCode == 87) {
+			console.log(paddle2Y);
+			paddle2Y -= 5;
+		}
+		if (evt.keyCode == 83) {
+			console.log(paddle2Y);
+			paddle2Y += 5;
+		}
+	});
 }
 
 function moveEverything() {
@@ -151,7 +164,10 @@ function moveEverything() {
 		drawWinScreen();
 		return;
 	}
-	computerMovement();
+
+	if (numPlayers == 1) {
+		computerMovement();
+	}
 
 	ballX = ballX + ballSpeedX;
 	ballY = ballY + ballSpeedY;
@@ -197,6 +213,7 @@ function drawNet() {
 		colorRect(canvas.width/2 - 1, i, 2, 20, 'white');
 	}
 }
+
 function drawWinScreen() {
 	drawBackground();
 	displayScore();
@@ -208,6 +225,7 @@ function drawWinScreen() {
 		ctx.fillText("Player 2 Wins!", canvas.width/2 - 70, canvas.height/2 - 100);
 	}
 	ctx.fillText("Click to Continue", canvas.width/2 - 70, canvas.height/2);
+	canvas.addEventListener('click', handleMouseClick);
 }
 
 function drawEverything() {

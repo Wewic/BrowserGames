@@ -150,11 +150,11 @@ function player2Movement() {
 	document.addEventListener("keydown", function(evt){
 		if (evt.keyCode == 87) {
 			console.log(paddle2Y);
-			paddle2Y -= 5;
+			paddle2Y -= 15;
 		}
 		if (evt.keyCode == 83) {
 			console.log(paddle2Y);
-			paddle2Y += 5;
+			paddle2Y += 15;
 		}
 	});
 }

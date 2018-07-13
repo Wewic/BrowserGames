@@ -9,6 +9,8 @@ var snakeHead = {
 	posY: 312
 }
 
+var direction = 'up';
+
 var randFoodPosX = foodPositionGenerator(numStepsAcrossScreen);
 var randFoodPosY = foodPositionGenerator(numStepsAcrossScreen);
 
@@ -24,6 +26,21 @@ window.onload = function() {
 }
 
 function startGame() {
+	document.addEventListener("keydown", function(evt){
+		if (evt.keyCode == 37) {
+			direction = 'left';
+		}
+		if (evt.keyCode == 38) {
+			direction = 'up';
+		}
+		if (evt.keyCode == 39) {
+			direction = 'right';
+		}
+		if (evt.keyCode == 40) {
+			direction = 'down';
+		}
+	});
+
 	setInterval(function() {
 		moveEverything();
 		drawBackground();
@@ -54,23 +71,42 @@ function drawFood() {
 		foodPosX = canvas.width/numStepsAcrossScreen * randFoodPosX;
 		foodPosY = canvas.height/numStepsAcrossScreen * randFoodPosY;
 	}
-	
+
 	colorRect(foodPosX, foodPosY, canvas.width/numStepsAcrossScreen, canvas.height/numStepsAcrossScreen, 'red');
 }
 
 function moveEverything() {
-	snakeHead.posX -= 24;
+	checkWrapAround();
 
-	if (snakeHead.posX  > canvas.width) {
-		snakeHead.posX  = 0;
+	switch(direction) {
+		case 'left':
+			snakeHead.posX -= 24;
+			break;
+		case 'right':
+			snakeHead.posX += 24;
+			break;
+		case 'up':
+			snakeHead.posY -= 24;
+			break;
+		case 'down':
+			snakeHead.posY += 24;
+			break;
+		default:
+			alert('No direction has been given.')
 	}
-	if (snakeHead.posX  < 0) {
-		snakeHead.posX  = canvas.width;
+}
+
+function checkWrapAround() {
+	if (snakeHead.posX > canvas.width) {
+		snakeHead.posX = -24;
+	}
+	if (snakeHead.posX < -24) {
+		snakeHead.posX = canvas.width;
 	}
 	if (snakeHead.posY > canvas.height) {
-		snakeHead.posY = 0;
+		snakeHead.posY = -24;
 	}
-	if (snakeHead.posY < 0) {
+	if (snakeHead.posY < -24) {
 		snakeHead.posY = canvas.height;
 	}
 }

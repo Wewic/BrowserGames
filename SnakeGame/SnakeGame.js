@@ -1,26 +1,35 @@
 var canvas;
 var ctx;
 
-const numStepsAcrossScreen = 25;
-const framesPerSecond = 6;
+const NUM_STEPS_ACROSS_SCREEN = 25;
+const FRAMES_PER_SECOND = 6;
+
+//  Based off width of canvas
+var RADIUS;
 
 var snakeHead = {
 	posX: 312,
 	posY: 312
 }
 
+var snake = [];
 var direction = 'up';
 
-var randFoodPosX = foodPositionGenerator(numStepsAcrossScreen);
-var randFoodPosY = foodPositionGenerator(numStepsAcrossScreen);
+var randFoodPosX = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
+var randFoodPosY = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
 
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
 	ctx = canvas.getContext('2d');
 
+	RADIUS = canvas.width/NUM_STEPS_ACROSS_SCREEN;
+
 	drawBackground();
-	drawSnakeHead();
+
 	drawFood();
+
+	snake.push(snakeHead);
+	drawSnake(snake, RADIUS, 'white');
 
 	startGame();
 }
@@ -43,18 +52,23 @@ function startGame() {
 
 	setInterval(function() {
 		moveEverything();
+
 		drawBackground();
-		drawSnakeHead();
+
 		drawFood();
-	}, 1000/framesPerSecond);
+
+		drawSnake(snake, RADIUS, 'white');
+	}, 1000/FRAMES_PER_SECOND);
 }
 
 function drawBackground() {
-	colorRect(0,0,canvas.width,canvas.height, 'black');
+	colorRect(0, 0, canvas.width, canvas.height, 'black');
 }
 
-function drawSnakeHead(centerX, centerY, radius, drawColor) {
-	colorRect(snakeHead.posX, snakeHead.posY, canvas.width/numStepsAcrossScreen, canvas.height/numStepsAcrossScreen, 'white');
+function drawSnake(snakeParts, radius, drawColor) {
+	for (let i = 0; i < snakeParts.length; i++) {
+		colorRect(snakeParts[i].posX, snakeParts[i].posY, radius, radius, drawColor);
+	}
 }
 
 function foodPositionGenerator(max) {
@@ -62,17 +76,21 @@ function foodPositionGenerator(max) {
 }
 
 function drawFood() {
-	let foodPosX = canvas.width/numStepsAcrossScreen * randFoodPosX;
-	let foodPosY = canvas.height/numStepsAcrossScreen * randFoodPosY;
+	let foodPosX = canvas.width/NUM_STEPS_ACROSS_SCREEN * randFoodPosX;
+	let foodPosY = canvas.height/NUM_STEPS_ACROSS_SCREEN * randFoodPosY;
 
 	if (foodPosX === snakeHead.posX && foodPosY === snakeHead.posY) {
-		randFoodPosX = foodPositionGenerator(numStepsAcrossScreen);
-		randFoodPosY = foodPositionGenerator(numStepsAcrossScreen);
-		foodPosX = canvas.width/numStepsAcrossScreen * randFoodPosX;
-		foodPosY = canvas.height/numStepsAcrossScreen * randFoodPosY;
+		eatFood(foodPosX, foodPosY);
 	}
 
-	colorRect(foodPosX, foodPosY, canvas.width/numStepsAcrossScreen, canvas.height/numStepsAcrossScreen, 'red');
+	colorRect(foodPosX, foodPosY, canvas.width/NUM_STEPS_ACROSS_SCREEN, canvas.height/NUM_STEPS_ACROSS_SCREEN, 'red');
+}
+
+function eatFood(foodPosX, foodPosY) {
+	randFoodPosX = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
+	randFoodPosY = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
+	foodPosX = canvas.width/NUM_STEPS_ACROSS_SCREEN * randFoodPosX;
+	foodPosY = canvas.height/NUM_STEPS_ACROSS_SCREEN * randFoodPosY;
 }
 
 function moveEverything() {
@@ -80,16 +98,16 @@ function moveEverything() {
 
 	switch(direction) {
 		case 'left':
-			snakeHead.posX -= 24;
+			snake[0].posX -= 24;
 			break;
 		case 'right':
-			snakeHead.posX += 24;
+			snake[0].posX += 24;
 			break;
 		case 'up':
-			snakeHead.posY -= 24;
+			snake[0].posY -= 24;
 			break;
 		case 'down':
-			snakeHead.posY += 24;
+			snake[0].posY += 24;
 			break;
 		default:
 			alert('No direction has been given.')
@@ -97,17 +115,17 @@ function moveEverything() {
 }
 
 function checkWrapAround() {
-	if (snakeHead.posX > canvas.width) {
-		snakeHead.posX = -24;
+	if (snake[0].posX > canvas.width) {
+		snake[0].posX = -24;
 	}
-	if (snakeHead.posX < -24) {
-		snakeHead.posX = canvas.width;
+	if (snake[0].posX < -24) {
+		snake[0].posX = canvas.width;
 	}
-	if (snakeHead.posY > canvas.height) {
-		snakeHead.posY = -24;
+	if (snake[0].posY > canvas.height) {
+		snake[0].posY = -24;
 	}
-	if (snakeHead.posY < -24) {
-		snakeHead.posY = canvas.height;
+	if (snake[0].posY < -24) {
+		snake[0].posY = canvas.height;
 	}
 }
 

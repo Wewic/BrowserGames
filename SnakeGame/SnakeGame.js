@@ -15,6 +15,8 @@ var snakeHead = {
 var snake = [];
 var direction = 'up';
 
+var foodPosX;
+var foodPosY;
 var randFoodPosX = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
 var randFoodPosY = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
 
@@ -23,10 +25,12 @@ window.onload = function() {
 	ctx = canvas.getContext('2d');
 
 	RADIUS = canvas.width/NUM_STEPS_ACROSS_SCREEN;
+	foodPosX = canvas.width/NUM_STEPS_ACROSS_SCREEN * randFoodPosX;
+	foodPosY = canvas.height/NUM_STEPS_ACROSS_SCREEN * randFoodPosY;
 
 	drawBackground();
 
-	drawFood();
+	drawFood(foodPosX, foodPosY);
 
 	snake.push(snakeHead);
 	drawSnake(snake, RADIUS, 'white');
@@ -55,7 +59,7 @@ function startGame() {
 
 		drawBackground();
 
-		drawFood();
+		drawFood(foodPosX, foodPosY);
 
 		drawSnake(snake, RADIUS, 'white');
 	}, 1000/FRAMES_PER_SECOND);
@@ -75,39 +79,59 @@ function foodPositionGenerator(max) {
 	return Math.floor(Math.random() * max);
 }
 
-function drawFood() {
-	let foodPosX = canvas.width/NUM_STEPS_ACROSS_SCREEN * randFoodPosX;
-	let foodPosY = canvas.height/NUM_STEPS_ACROSS_SCREEN * randFoodPosY;
-
-	if (foodPosX === snakeHead.posX && foodPosY === snakeHead.posY) {
-		eatFood(foodPosX, foodPosY);
-	}
-
+function drawFood(foodPosX, foodPosY) {
 	colorRect(foodPosX, foodPosY, canvas.width/NUM_STEPS_ACROSS_SCREEN, canvas.height/NUM_STEPS_ACROSS_SCREEN, 'red');
 }
 
-function eatFood(foodPosX, foodPosY) {
+function eatFood() {
+	//  Re-generate food elsewhere
 	randFoodPosX = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
 	randFoodPosY = foodPositionGenerator(NUM_STEPS_ACROSS_SCREEN);
 	foodPosX = canvas.width/NUM_STEPS_ACROSS_SCREEN * randFoodPosX;
 	foodPosY = canvas.height/NUM_STEPS_ACROSS_SCREEN * randFoodPosY;
-}
 
-function moveEverything() {
-	checkWrapAround();
+	snake[snake.length - 1] = snake[0];
 
 	switch(direction) {
 		case 'left':
-			snake[0].posX -= 24;
+			snake[snake.length - 1].posX = snake[0].posX -= 24;
 			break;
 		case 'right':
-			snake[0].posX += 24;
+			snake[snake.length - 1].posX = snake[0].posX += 24;
 			break;
 		case 'up':
-			snake[0].posY -= 24;
+			snake[snake.length - 1].posY = snake[0].posY -= 24;
 			break;
 		case 'down':
-			snake[0].posY += 24;
+			snake[snake.length - 1].posY = snake[0].posY += 24;
+			break;
+		default:
+			alert('No direction has been given.')
+	}
+}
+
+function moveEverything() {
+
+	checkWrapAround();
+
+	if (foodPosX === snakeHead.posX && foodPosY === snakeHead.posY) {
+		eatFood();
+	}
+
+	snake[snake.length - 1] = snake[0];
+
+	switch(direction) {
+		case 'left':
+			snake[snake.length - 1].posX = snake[0].posX -= 24;
+			break;
+		case 'right':
+			snake[snake.length - 1].posX = snake[0].posX += 24;
+			break;
+		case 'up':
+			snake[snake.length - 1].posY = snake[0].posY -= 24;
+			break;
+		case 'down':
+			snake[snake.length - 1].posY = snake[0].posY += 24;
 			break;
 		default:
 			alert('No direction has been given.')
